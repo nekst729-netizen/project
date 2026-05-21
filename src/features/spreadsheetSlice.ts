@@ -66,8 +66,27 @@ const spreadsheetSlice = createSlice({
     selectCells: (state, action: PayloadAction<string[]>) => { state.selectedCells = action.payload; },
     addToSelection: (state, action: PayloadAction<string>) => { if (!state.selectedCells.includes(action.payload)) state.selectedCells.push(action.payload); },
     clearSelection: (state) => { state.selectedCells = []; },
+    undo: (state) => { 
+      if (state.history.length === 0) return;
+      if (state.historyIndex > 0) { 
+        state.historyIndex--;
+        state.cells = JSON.parse(JSON.stringify(state.history[state.historyIndex].cells));
+      } else if (state.historyIndex === 0) {
+        state.historyIndex = -1;
+        state.cells = JSON.parse(JSON.stringify(state.history[0].cells));
+      }
+    },
+    redo: (state) => { 
+      if
+
+
+    (state.historyIndex < state.history.length - 1) { 
+        state.historyIndex++;
+        state.cells = JSON.parse(JSON.stringify(state.history[state.historyIndex].cells));
+      }
+    },
   },
 });
 
-export const { setCellValue, selectCell, selectCells, addToSelection, clearSelection } = spreadsheetSlice.actions;
+export const { setCellValue, selectCell, selectCells, addToSelection, clearSelection, undo, redo } = spreadsheetSlice.actions;
 export default spreadsheetSlice.reducer;
