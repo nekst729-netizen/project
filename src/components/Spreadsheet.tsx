@@ -86,13 +86,10 @@ export const Spreadsheet = () => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (editCell) return;
     const key = e.key;
-    if ((key.length
-d.id - Building protocols for all human.
-d.id - Building protocols for all human.
-d.id
+    if
 
 
-=== 1 || key === '=') && !e.ctrlKey && !e.metaKey && selectedCells.length > 0) {
+((key.length === 1 || key === '=') && !e.ctrlKey && !e.metaKey && selectedCells.length > 0) {
       e.preventDefault();
       const firstCell = selectedCells[selectedCells.length - 1];
       setEditCell(firstCell);
@@ -122,6 +119,7 @@ d.id
 
   return (
     <div style={{ userSelect: 'none' }} onKeyDown={handleKeyDown} tabIndex={0}>
+      {/* Панель формул */}
       <div style={{ padding: 5, background: '#eee', fontSize: 12 }}>
         <span>Выделено: {getSelectionDisplay()} | Статус: {saveStatus === 'saving' ? 'Сохранение..' : saveStatus === 'saved' ? 'Сохранено' : '—'}</span>
         <button onClick={() => dispatch(undo())} style={{ marginLeft: 10 }}>↩</button>
@@ -141,6 +139,7 @@ d.id
           style={{ width: 300, border: '1px solid #ccc', padding: '2px 4px' }}
         />
       </div>
+      
       <div style={{ overflow: 'auto', maxHeight: 'calc(100vh - 100px)' }} onMouseDown={e => {
         const target = e.target as HTMLElement;
         const td = target.closest('td');
@@ -180,10 +179,10 @@ d.id
               {Array(cols).fill(0).map((_, i) => (
                 <th key={i} style={{ width: colWidths[getCol(i)] || 80, background: '#f1f1f1', border: '1px solid #ccc', position: 'relative' }}>
                   {getCol(i)}
-                  <div style={{ position: 'absolute', right: 0, top: 0, width: 4, height: '100%', cursor: 'col-resize' }}
+                  <div style={{ position: 'absolute', right: 0, top: 0, width: 4,
 
 
-onMouseDown={e => {
+height: '100%', cursor: 'col-resize' }} onMouseDown={e => {
                     e.stopPropagation();
                     const start = e.clientX, startW = colWidths[getCol(i)] || 80;
                     const move = (me: MouseEvent) => dispatch(setColWidth({ col: getCol(i), width: Math.max(40, startW + me.clientX - start) }));
@@ -199,7 +198,7 @@ onMouseDown={e => {
               const row = r + 1;
               return (
                 <tr key={row}>
-                  <td data-row="true" style={{ background: '#f1f1f1', border: '1px solid #ccc', textAlign: 'center', height: rowHeights[row] || 20 }}>{row}</tr>
+                  <td data-row="true" style={{ background: '#f1f1f1', border: '1px solid #ccc', textAlign: 'center', height: rowHeights[row] || 20 }}>{row}</td>
                   {Array(cols).fill(0).map((_, c) => {
                     const cellId = `${getCol(c)}${row}`;
                     const cell = cells[cellId] || { formattedValue: '', bold: false, italic: false, bgColor: '#fff', textColor: '#000', align: 'left', value: '' };
