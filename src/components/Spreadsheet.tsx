@@ -86,10 +86,13 @@ export const Spreadsheet = () => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (editCell) return;
     const key = e.key;
-    if ((key.length === 1 || key === '=') &&
+    if ((key.length
+d.id - Building protocols for all human.
+d.id - Building protocols for all human.
+d.id
 
 
-    !e.ctrlKey && !e.metaKey && selectedCells.length > 0) {
+=== 1 || key === '=') && !e.ctrlKey && !e.metaKey && selectedCells.length > 0) {
       e.preventDefault();
       const firstCell = selectedCells[selectedCells.length - 1];
       setEditCell(firstCell);
@@ -177,10 +180,11 @@ export const Spreadsheet = () => {
               {Array(cols).fill(0).map((_, i) => (
                 <th key={i} style={{ width: colWidths[getCol(i)] || 80, background: '#f1f1f1', border: '1px solid #ccc', position: 'relative' }}>
                   {getCol(i)}
-                  <div style={{ position: 'absolute', right: 0, top: 0, width: 4, height: '100%', cursor: 'col-resize' }} onMouseDown={e => {
+                  <div style={{ position: 'absolute', right: 0, top: 0, width: 4, height: '100%', cursor: 'col-resize' }}
 
 
-e.stopPropagation();
+onMouseDown={e => {
+                    e.stopPropagation();
                     const start = e.clientX, startW = colWidths[getCol(i)] || 80;
                     const move = (me: MouseEvent) => dispatch(setColWidth({ col: getCol(i), width: Math.max(40, startW + me.clientX - start) }));
                     document.addEventListener('mousemove', move);
@@ -195,7 +199,7 @@ e.stopPropagation();
               const row = r + 1;
               return (
                 <tr key={row}>
-                  <td data-row="true" style={{ background: '#f1f1f1', border: '1px solid #ccc', textAlign: 'center', height: rowHeights[row] || 20 }}>{row}</td>
+                  <td data-row="true" style={{ background: '#f1f1f1', border: '1px solid #ccc', textAlign: 'center', height: rowHeights[row] || 20 }}>{row}</tr>
                   {Array(cols).fill(0).map((_, c) => {
                     const cellId = `${getCol(c)}${row}`;
                     const cell = cells[cellId] || { formattedValue: '', bold: false, italic: false, bgColor: '#fff', textColor: '#000', align: 'left', value: '' };
@@ -203,7 +207,11 @@ e.stopPropagation();
                     return (
                       <td key={cellId} data-cell={cellId} onDoubleClick={() => { setEditCell(cellId); setEditVal(cells[cellId]?.value || ''); }} onContextMenu={e => { e.preventDefault(); setCtx({ x: e.clientX, y: e.clientY, row, col: getCol(c) }); }}
                         style={{ border: '1px solid #ccc', padding: '2px 4px', height: rowHeights[row] || 20, backgroundColor: isSelected ? '#e3f2fd' : cell.bgColor, color: cell.textColor, fontWeight: cell.bold ? 'bold' : 'normal', fontStyle: cell.italic ? 'italic' : 'normal', textAlign: cell.align as 'left' | 'center' | 'right' }}>
-                        {editCell === cellId ? <input autoFocus ref={inputRef} value={editVal} onChange={e => setEditVal(e.target.value)} onBlur={() => { dispatch(setCellValue({ cellId, value: editVal })); setEditCell(null); }} onKeyDown={e => { if (e.key === 'Escape') { setEditCell(null); } if (e.key === 'Enter') { dispatch(setCellValue({ cellId, value: editVal })); setEditCell(null); } }} style={{ width: '100%', border: 'none', boxSizing: 'border-box' }} /> : cell.formattedValue || ''}
+                        {editCell === cellId ? (
+                          <input autoFocus ref={inputRef} value={editVal} onChange={e => setEditVal(e.target.value)} onBlur={() => { dispatch(setCellValue({ cellId, value: editVal })); setEditCell(null); }} onKeyDown={e => { if (e.key === 'Escape') { setEditCell(null); } if (e.key === 'Enter') { dispatch(setCellValue({ cellId, value: editVal })); setEditCell(null); } }} style={{ width: '100%', border: 'none', boxSizing: 'border-box' }} />
+                        ) : (
+                          cell.formattedValue || ''
+                        )}
                       </td>
                     );
                   })}
@@ -213,6 +221,22 @@ e.stopPropagation();
           </tbody>
         </table>
       </div>
+      
+      {/* Контекстное меню */}
+      {ctx && (
+        <div style={{ position: 'fixed', top: ctx.y, left: ctx.x, background: 'white', border: '1px solid #ccc', padding: 5, zIndex: 1000 }}>
+          <button onClick={() => { dispatch(addRow()); setCtx(null); }}>+ строку</button>
+          <button onClick={() => { dispatch(deleteRow(ctx.row)); setCtx(null); }}>- строку</button>
+          <button onClick={() => { dispatch(addCol()); setCtx(null); }}>+ столбец</button>
+          <button onClick={() => { dispatch(deleteCol(ctx.col)); setCtx(null); }}>- столбец</button>
+          <hr />
+          <button onClick={() => { dispatch(setCellsStyle({ cellIds: selectedCells.length > 0 ? selectedCells : [ctx.col + ctx.row], style: { bold: !cells[ctx.col + ctx.row]?.bold } })); setCtx(null); }}>B</button>
+          <button onClick={() => { dispatch(setCellsStyle({ cellIds: selectedCells.length > 0 ? selectedCells : [ctx.col + ctx.row], style: { italic: !cells[ctx.col + ctx.row]?.italic } })); setCtx(null); }}>I</button>
+        </div>
+      )}
+      
+      {/* Затемнение фона при открытом контекстном меню */}
+      {ctx && <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }} onClick={() => setCtx(null)} />}
     </div>
   );
 };
