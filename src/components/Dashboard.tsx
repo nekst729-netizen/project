@@ -98,7 +98,10 @@ export const Dashboard = () => {
   const [rows, setRows] = useState('100');
   const [cols, setCols] = useState('26');
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [editName, setEditName] = useState('');
+  const [editName, setEditName] =
+
+
+useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -170,8 +173,7 @@ export const Dashboard = () => {
               {editingId === doc.id ? (
                 <input ref={inputRef} value={editName} onChange={e => setEditName(e.target.value)} onBlur={() => saveRename(doc.id)} onKeyDown={e => { if (e.key === 'Enter') saveRename(doc.id); if (e.key === 'Escape') setEditingId(null); }} style={{ fontSize: 16, fontWeight: 'bold', border: '1px solid #007bff', padding: '4px 8px', width: '60%' }} />
               ) : (
-                <h3 style={{ margin: '0 0 4px 0', cursor: 'pointer' }} onClick={() => startRename(doc.id, doc.name)}>{doc.name}</h3>
-              )}
+                <h3 style={{ margin: '0 0 4px 0', cursor: 'pointer' }} onClick={() => startRename(doc.id, doc.name)}>{doc.name}</h3>)}
               <div style={{ fontSize: 12, color: '#666', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <span>Экспорт:</span>
                 <button onClick={() => exportToCSV(doc)} style={{ padding: '4px 12px', fontSize: 12, border: '1px solid #000', background: '#eee', fontFamily: 'inherit', borderRadius: 0 }}>CSV</button>
@@ -196,16 +198,19 @@ export const Dashboard = () => {
           <div style={{ background: 'white', padding: 24 }} onClick={e => e.stopPropagation()}>
             <h3 style={{ marginTop: 0 }}>Новый документ</h3>
             <div style={{ marginBottom: 12 }}>
-              <label>Название:</label><br />
+              <label>Название:</label>
+
               <input value={name} onChange={e => setName(e.target.value)} style={{ width: '100%', padding: '8px 12px', fontSize: 14, border: '1px solid #ccc' }} />
             </div>
             <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
               <div>
-                <label>Строк:</label><br />
+                <label>Строк:</label>
+
                 <input type="number" value={rows} onChange={e => setRows(e.target.value)} min="1" max="1000" style={{ width: 80, padding: '8px 12px', fontSize: 14 }} />
               </div>
               <div>
-                <label>Столбцов:</label><br />
+                <label>Столбцов:</label>
+
                 <input type="number" value={cols} onChange={e => setCols(e.target.value)} min="1" max="702" style={{ width: 80, padding: '8px 12px', fontSize: 14 }} />
               </div>
             </div>
