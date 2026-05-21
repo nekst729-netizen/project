@@ -1,9 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-const
-
-
-evalFormula = (formula: string, cells: Record<string, any>): string => {
+const evalFormula = (formula: string, cells: Record<string, any>): string => {
   if (!formula.startsWith('=')) return formula;
   let expr = formula.slice(1);
   
@@ -75,15 +72,16 @@ const spreadsheetSlice = createSlice({
       });
       state.history.push({ cells: newCells });
       state.historyIndex = state.history.length - 1;
-      state.cells = newCells;
+
+
+state.cells = newCells;
     },
     selectCell: (state, action: PayloadAction<string>) => { state.selectedCells = [action.payload]; },
-    selectCells: (state, action:
-
-
-PayloadAction<string[]>) => { state.selectedCells = action.payload; },
+    selectCells: (state, action: PayloadAction<string[]>) => { state.selectedCells = action.payload; },
     addToSelection: (state, action: PayloadAction<string>) => { if (!state.selectedCells.includes(action.payload)) state.selectedCells.push(action.payload); },
     clearSelection: (state) => { state.selectedCells = []; },
+    
+    // ДОБАВЛЕНЫ setCellStyle, setCellsStyle
     setCellStyle: (state, action: PayloadAction<{ cellId: string; style: any }>) => {
       if (!state.cells[action.payload.cellId]) state.cells[action.payload.cellId] = { value: '', formattedValue: '', bold: false, italic: false, bgColor: '#fff', textColor: '#000', align: 'left' };
       Object.assign(state.cells[action.payload.cellId], action.payload.style);
@@ -99,6 +97,7 @@ PayloadAction<string[]>) => { state.selectedCells = action.payload; },
       state.historyIndex = state.history.length - 1;
       state.cells = newCells;
     },
+    
     undo: (state) => { 
       if (state.history.length === 0) return;
       if (state.historyIndex > 0) { 
@@ -147,8 +146,10 @@ PayloadAction<string[]>) => { state.selectedCells = action.payload; },
         rows: action.payload.rows ?? 100, 
         cols: action.payload.cols ?? 26, 
         cells: action.payload.cells || {}, 
-        colWidths: action.payload.colWidths || {}, 
-        rowHeights: action.payload.rowHeights || {},
+        colWidths: action.payload.colWidths || {},
+
+
+rowHeights: action.payload.rowHeights || {},
         history: action.payload.history || [],
         historyIndex: action.payload.history ? action.payload.history.length - 1 : -1,
       }; 
@@ -156,10 +157,8 @@ PayloadAction<string[]>) => { state.selectedCells = action.payload; },
   },
 });
 
-export const {
-
-
-setCellValue, 
+export const { 
+  setCellValue, 
   setCellsValue, 
   selectCell, 
   selectCells, 

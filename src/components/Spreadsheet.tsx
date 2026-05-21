@@ -70,7 +70,8 @@ export const Spreadsheet = () => {
     const sr = parseInt(start.match(/\d+/)?.[0] || '1');
     const ec = end.match(/[A-Z]+/)?.[0] || 'A';
     const er = parseInt(end.match(/\d+/)?.[0] || '1');
-    const minC = Math.min(sc.charCodeAt(0), ec.charCodeAt(0));
+    const minC = Math.min(sc.charCodeAt(0),
+    ec.charCodeAt(0));
     const maxC = Math.max(sc.charCodeAt(0), ec.charCodeAt(0));
     const minR = Math.min(sr, er);
     const maxR = Math.max(sr, er);
@@ -86,10 +87,7 @@ export const Spreadsheet = () => {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (editCell) return;
     const key = e.key;
-    if
-
-
-((key.length === 1 || key === '=') && !e.ctrlKey && !e.metaKey && selectedCells.length > 0) {
+    if ((key.length === 1 || key === '=') && !e.ctrlKey && !e.metaKey && selectedCells.length > 0) {
       e.preventDefault();
       const firstCell = selectedCells[selectedCells.length - 1];
       setEditCell(firstCell);
@@ -119,7 +117,6 @@ export const Spreadsheet = () => {
 
   return (
     <div style={{ userSelect: 'none' }} onKeyDown={handleKeyDown} tabIndex={0}>
-      {/* Панель формул */}
       <div style={{ padding: 5, background: '#eee', fontSize: 12 }}>
         <span>Выделено: {getSelectionDisplay()} | Статус: {saveStatus === 'saving' ? 'Сохранение..' : saveStatus === 'saved' ? 'Сохранено' : '—'}</span>
         <button onClick={() => dispatch(undo())} style={{ marginLeft: 10 }}>↩</button>
@@ -172,17 +169,17 @@ export const Spreadsheet = () => {
           }
         }
       }} onMouseUp={() => { setDragStart(null); }}>
-        <table style={{ borderCollapse: 'collapse', fontSize: 12 }}>
+        <table style={{
+
+
+borderCollapse: 'collapse', fontSize: 12 }}>
           <thead>
             <tr>
               <th style={{ width: 40, background: '#f1f1f1' }}></th>
               {Array(cols).fill(0).map((_, i) => (
                 <th key={i} style={{ width: colWidths[getCol(i)] || 80, background: '#f1f1f1', border: '1px solid #ccc', position: 'relative' }}>
                   {getCol(i)}
-                  <div style={{ position: 'absolute', right: 0, top: 0, width: 4,
-
-
-height: '100%', cursor: 'col-resize' }} onMouseDown={e => {
+                  <div style={{ position: 'absolute', right: 0, top: 0, width: 4, height: '100%', cursor: 'col-resize' }} onMouseDown={e => {
                     e.stopPropagation();
                     const start = e.clientX, startW = colWidths[getCol(i)] || 80;
                     const move = (me: MouseEvent) => dispatch(setColWidth({ col: getCol(i), width: Math.max(40, startW + me.clientX - start) }));
@@ -198,7 +195,7 @@ height: '100%', cursor: 'col-resize' }} onMouseDown={e => {
               const row = r + 1;
               return (
                 <tr key={row}>
-                  <td data-row="true" style={{ background: '#f1f1f1', border: '1px solid #ccc', textAlign: 'center', height: rowHeights[row] || 20 }}>{row}</td>
+                  <td data-row="true" style={{ background: '#f1f1f1', border: '1px solid #ccc', textAlign: 'center', height: rowHeights[row] || 20 }}>{row}</tr>
                   {Array(cols).fill(0).map((_, c) => {
                     const cellId = `${getCol(c)}${row}`;
                     const cell = cells[cellId] || { formattedValue: '', bold: false, italic: false, bgColor: '#fff', textColor: '#000', align: 'left', value: '' };
@@ -214,14 +211,14 @@ height: '100%', cursor: 'col-resize' }} onMouseDown={e => {
                       </td>
                     );
                   })}
-                </tr>
+                <tr>
               );
             })}
           </tbody>
         </table>
       </div>
       
-      {/* Контекстное меню */}
+      {/* Контекстное меню с кнопками B, I */}
       {ctx && (
         <div style={{ position: 'fixed', top: ctx.y, left: ctx.x, background: 'white', border: '1px solid #ccc', padding: 5, zIndex: 1000 }}>
           <button onClick={() => { dispatch(addRow()); setCtx(null); }}>+ строку</button>
@@ -229,8 +226,12 @@ height: '100%', cursor: 'col-resize' }} onMouseDown={e => {
           <button onClick={() => { dispatch(addCol()); setCtx(null); }}>+ столбец</button>
           <button onClick={() => { dispatch(deleteCol(ctx.col)); setCtx(null); }}>- столбец</button>
           <hr />
+          {/* Кнопки B (жирный) и I (курсив) */}
           <button onClick={() => { dispatch(setCellsStyle({ cellIds: selectedCells.length > 0 ? selectedCells : [ctx.col + ctx.row], style: { bold: !cells[ctx.col + ctx.row]?.bold } })); setCtx(null); }}>B</button>
-          <button onClick={() => { dispatch(setCellsStyle({ cellIds: selectedCells.length > 0 ? selectedCells : [ctx.col + ctx.row], style: { italic: !cells[ctx.col + ctx.row]?.italic } })); setCtx(null); }}>I</button>
+          <button
+
+
+onClick={() => { dispatch(setCellsStyle({ cellIds: selectedCells.length > 0 ? selectedCells : [ctx.col + ctx.row], style: { italic: !cells[ctx.col + ctx.row]?.italic } })); setCtx(null); }}>I</button>
         </div>
       )}
       
