@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Link, Navigate } from 'react-router-dom';
-import { useAppSelector, useAppDispatch } from '../../project/src/app/hooks';
+import { useAppSelector, useAppDispatch } from './app/hooks';
 import { logout } from './features/authSlice';
 import { Login } from './components/Login';
 import { Register } from './components/Register';

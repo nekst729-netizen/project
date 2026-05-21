@@ -8,8 +8,8 @@ interface Document {
   data: any;
 }
 
-const initialState: { documents: Document[] } = {
-  documents: []
+const initialState: { documents: Document[]; activeDocumentId: string | null; saveStatus: string } = {
+  documents: [], activeDocumentId: null, saveStatus: 'idle'
 };
 
 const documentsSlice = createSlice({
@@ -52,8 +52,10 @@ const documentsSlice = createSlice({
         localStorage.setItem('documents', JSON.stringify(state.documents));
       }
     },
+    setActiveDocument: (state, action: PayloadAction<string | null>) => { state.activeDocumentId = action.payload; },
+    setSaveStatus: (state, action: PayloadAction<string>) => { state.saveStatus = action.payload; },
   },
 });
 
-export const { loadDocuments, createDocument, updateDocument, deleteDocument, duplicateDocument } = documentsSlice.actions;
+export const { loadDocuments, createDocument, updateDocument, deleteDocument, duplicateDocument, setActiveDocument, setSaveStatus } = documentsSlice.actions;
 export default documentsSlice.reducer;
