@@ -1,7 +1,4 @@
-import {
-
-
-createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 const evalFormula = (formula: string, cells: Record<string, any>): string => {
   if (!formula.startsWith('=')) return formula;
@@ -77,14 +74,10 @@ const spreadsheetSlice = createSlice({
       state.historyIndex = state.history.length - 1;
       state.cells = newCells;
     },
-    selectCell: (state, action: PayloadAction<string>) => { state.selectedCells =
-
-
-[action.payload]; },
+    selectCell: (state, action: PayloadAction<string>) => { state.selectedCells = [action.payload]; },
     selectCells: (state, action: PayloadAction<string[]>) => { state.selectedCells = action.payload; },
     addToSelection: (state, action: PayloadAction<string>) => { if (!state.selectedCells.includes(action.payload)) state.selectedCells.push(action.payload); },
     clearSelection: (state) => { state.selectedCells = []; },
-    
     setCellStyle: (state, action: PayloadAction<{ cellId: string; style: any }>) => {
       if (!state.cells[action.payload.cellId]) state.cells[action.payload.cellId] = { value: '', formattedValue: '', bold: false, italic: false, bgColor: '#fff', textColor: '#000', align: 'left' };
       Object.assign(state.cells[action.payload.cellId], action.payload.style);
@@ -100,7 +93,6 @@ const spreadsheetSlice = createSlice({
       state.historyIndex = state.history.length - 1;
       state.cells = newCells;
     },
-    
     undo: (state) => { 
       if (state.history.length === 0) return;
       if (state.historyIndex > 0) { 
@@ -117,11 +109,8 @@ const spreadsheetSlice = createSlice({
         state.cells = JSON.parse(JSON.stringify(state.history[state.historyIndex].cells));
       }
     },
-    
-    // ДОБАВЛЕНЫ setColWidth, setRowHeight
     setColWidth: (state, action: PayloadAction<{ col: string; width: number }>) => { state.colWidths[action.payload.col] = action.payload.width; },
     setRowHeight: (state, action: PayloadAction<{ row: number; height: number }>) => { state.rowHeights[action.payload.row] = action.payload.height; },
-    
     addRow: (state) => { state.history.push({ cells: JSON.parse(JSON.stringify(state.cells)) }); state.historyIndex = state.history.length - 1; state.rows++; },
     addCol: (state) => { state.history.push({ cells: JSON.parse(JSON.stringify(state.cells)) }); state.historyIndex = state.history.length - 1; state.cols++; },
     deleteRow: (state, action: PayloadAction<number>) => {
@@ -155,31 +144,11 @@ const spreadsheetSlice = createSlice({
         colWidths: action.payload.colWidths || {}, 
         rowHeights: action.payload.rowHeights || {},
         history: action.payload.history || [],
-
-
-historyIndex: action.payload.history ? action.payload.history.length - 1 : -1,
+        historyIndex: action.payload.history ? action.payload.history.length - 1 : -1,
       }; 
     },
   },
 });
 
-export const { 
-  setCellValue, 
-  setCellsValue, 
-  selectCell, 
-  selectCells, 
-  addToSelection, 
-  clearSelection, 
-  setCellStyle, 
-  setCellsStyle, 
-  undo, 
-  redo, 
-  setColWidth, 
-  setRowHeight, 
-  addRow, 
-  addCol, 
-  deleteRow, 
-  deleteCol, 
-  loadDocument 
-} = spreadsheetSlice.actions;
+export const { setCellValue, setCellsValue, selectCell, selectCells, addToSelection, clearSelection, setCellStyle, setCellsStyle, undo, redo, setColWidth, setRowHeight, addRow, addCol, deleteRow, deleteCol, loadDocument } = spreadsheetSlice.actions;
 export default spreadsheetSlice.reducer;

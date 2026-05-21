@@ -2,38 +2,28 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { setCellValue, setCellsValue, selectCell, selectCells, setCellsStyle, undo, redo, setColWidth, addRow, addCol, deleteRow, deleteCol, loadDocument } from '../features/spreadsheetSlice';
-import { useAuth } from '../context/AuthContext';
-import { documentsApi } from '../services/authApi';
+import { updateDocument, setSaveStatus, setActiveDocument } from '../features/documentsSlice';
 
 export const Spreadsheet = () => {
   const { documentId } = useParams();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { cells, selectedCells, rows, cols, colWidths, rowHeights } = useAppSelector(s => s.spreadsheet);
+  const { documents, activeDocumentId, saveStatus } = useAppSelector(s => s.documents);
   const [editCell, setEditCell] = useState<string | null>(null);
   const [editVal, setEditVal] = useState('');
   const [ctx, setCtx] = useState<any>(null);
   const [formulaBarVal, setFormulaBarVal] = useState('');
   const [dragStart, setDragStart] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const timer = useRef<any>(null);
-  const { accessToken } = useAuth();
 
   useEffect(() => {
-    if (!documentId || !accessToken) return;
-    const loadDoc = async () => {
-      try {
-        const doc = await documentsApi.getDocument(documentId, accessToken);
-        dispatch(loadDocument(doc.data));
-      } catch (err: any) {
-        if (err.message === 'ACCESS_DENIED') {
-          navigate('/dashboard');
-        }
-      }
-    };
-    loadDoc();
-  }, [documentId, accessToken]);
+    if (!documentId) return;
+    const doc = documents.find(d => d.id === documentId);
+    if (doc) { dispatch(setActiveDocument(documentId)); if (doc.data) dispatch(loadDocument(doc.data)); }
+    else navigate('/dashboard');
+  }, [documentId, documents]);
 
   useEffect(() => {
     if (selectedCells.length > 0) {
@@ -44,30 +34,27 @@ export const Spreadsheet = () => {
 
   const save = () => {
     if (timer.current) clearTimeout(timer.current);
-    setSaving(true);
-    timer.current = setTimeout(async () => {
-      if (documentId && accessToken) {
-        try {
-          await documentsApi.updateDocument(documentId, { data: { cells, rows, cols, colWidths, rowHeights } }, accessToken);
-        } catch (err: any) {
-          if (err.message === 'ACCESS_DENIED') navigate('/dashboard');
-        }
-      }
-      setSaving(false);
-      setTimeout(() => setSaving(false), 500);
+    dispatch(setSaveStatus('saving'));
+    timer.current = setTimeout(() => {
+      if (activeDocumentId) dispatch(updateDocument({ id: activeDocumentId, data: { cells, rows, cols, colWidths, rowHeights } }));
+      dispatch(setSaveStatus('saved'));
+      setTimeout(() => dispatch(setSaveStatus('idle')), 500);
     }, 500);
   };
 
-  useEffect(() => { if (documentId) save(); }, [cells, rows, cols, colWidths, rowHeights]);
+  useEffect(() => { if (activeDocumentId) save(); }, [cells, rows, cols, colWidths, rowHeights]);
 
   useEffect(() => {
+    console.log('selectedCells:', selectedCells);
     const handler = (e: KeyboardEvent) => {
+      console.log('key:', e.key, 'target:', (e.target as HTMLElement).tagName);
       if (e.ctrlKey || e.metaKey) {
         if (e.key === 'z' || e.key === 'Z') { e.preventDefault(); dispatch(undo()); }
         if (e.key === 'y' || (e.shiftKey && e.key === 'Z')) { e.preventDefault(); dispatch(redo()); }
       }
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedCells.length > 0) {
         if ((e.target as HTMLElement).tagName === 'INPUT') return;
+        console.log('Deleting cells:', selectedCells);
         e.preventDefault();
         dispatch(setCellsValue({ cellIds: selectedCells, value: '' }));
       }
@@ -96,7 +83,7 @@ export const Spreadsheet = () => {
     return result;
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+const handleKeyDown = (e: React.KeyboardEvent) => {
     if (editCell) return;
     const key = e.key;
     if ((key.length === 1 || key === '=') && !e.ctrlKey && !e.metaKey && selectedCells.length > 0) {
@@ -130,7 +117,7 @@ export const Spreadsheet = () => {
   return (
     <div style={{ userSelect: 'none' }} onKeyDown={handleKeyDown} tabIndex={0}>
       <div style={{ padding: 5, background: '#eee', fontSize: 12 }}>
-        <span>Выделено: {getSelectionDisplay()} | Статус: {saving ? 'Сохранение..' : '—'}</span>
+        <span>Выделено: {getSelectionDisplay()} | Статус: {saveStatus === 'saving' ? 'Сохранение..' : saveStatus === 'saved' ? 'Сохранено' : '—'}</span>
         <button onClick={() => dispatch(undo())} style={{ marginLeft: 10 }}>↩</button>
         <button onClick={() => dispatch(redo())}>↪</button>
         <span style={{ marginLeft: 20 }}>Формула: </span>
