@@ -63,8 +63,11 @@ const spreadsheetSlice = createSlice({
       state.cells = newCells;
     },
     selectCell: (state, action: PayloadAction<string>) => { state.selectedCells = [action.payload]; },
+    selectCells: (state, action: PayloadAction<string[]>) => { state.selectedCells = action.payload; },
+    addToSelection: (state, action: PayloadAction<string>) => { if (!state.selectedCells.includes(action.payload)) state.selectedCells.push(action.payload); },
+    clearSelection: (state) => { state.selectedCells = []; },
   },
 });
 
-export const { setCellValue, selectCell } = spreadsheetSlice.actions;
+export const { setCellValue, selectCell, selectCells, addToSelection, clearSelection } = spreadsheetSlice.actions;
 export default spreadsheetSlice.reducer;
